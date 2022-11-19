@@ -1,0 +1,6 @@
+#!/bin/bash
+year=$(date +'%Y')
+day=$(date +'%-d')
+token=$1
+
+aoc_setup_date $year $day $token

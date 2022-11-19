@@ -18,10 +18,17 @@ echo "Downloading input for ${url}"
 
 response=$(curl -sB --cookie "session=${token}" $url -H "Connection: close")
 
+if [ "$response" == "$(cat ./unavailable_date.txt)" ]
+then
+    echo "No Puzzle Available"
+    exit 1
+fi
+
 if [ ! -d $DAY_DIR ]
 then
     mkdir -p $DAY_DIR
     echo "Creating $DAY_DIR"
 fi
+
 echo $response > $FILE
 echo "File saved"

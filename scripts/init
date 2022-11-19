@@ -1,0 +1,2 @@
+sudo cp ./aoc_update_scripts /usr/local/bin
+aoc_update_scripts

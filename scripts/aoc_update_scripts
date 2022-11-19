@@ -1,0 +1,2 @@
+sudo \cp ./aoc_setup_date /usr/local/bin
+sudo \cp ./aoc_setup_today /usr/local/bin
