@@ -5,7 +5,8 @@ token=$3
 
 YEAR_DIR=~/Desktop/advent-of-code/${year}
 DAY_DIR="${YEAR_DIR}/${day}"
-FILE="${DAY_DIR}/input.txt"
+INPUT_FILE="${DAY_DIR}/input.txt"
+CODE_FILE="${DAY_DIR}/main.c"
 
 if test -f $FILE
 then
@@ -30,5 +31,8 @@ then
     echo "Creating $DAY_DIR"
 fi
 
-echo $response > $FILE
+echo $response > $INPUT_FILE
 echo "File saved"
+
+cp ./main.c $DAY_DIR
+echo "Created skeleton .c file"
