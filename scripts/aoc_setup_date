@@ -1,14 +1,14 @@
 #!/bin/bash
 year=$1
 day=$2
-token=$3
+token=$(cat /home/dan/Desktop/advent-of-code/cookie.txt)
 
 YEAR_DIR=~/Desktop/advent-of-code/${year}
 DAY_DIR="${YEAR_DIR}/${day}"
 INPUT_FILE="${DAY_DIR}/input.txt"
 CODE_FILE="${DAY_DIR}/main.c"
 
-if test -f $FILE
+if test -f $INPUT_FILE
 then
     echo "Input Already Exists"
     exit 0
@@ -31,7 +31,7 @@ then
     echo "Creating $DAY_DIR"
 fi
 
-echo $response > $INPUT_FILE
+echo "$response" >> $INPUT_FILE
 echo "File saved"
 
 cp ./main.c $DAY_DIR

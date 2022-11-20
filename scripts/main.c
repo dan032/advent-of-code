@@ -9,7 +9,7 @@ int main(int argc, char *argv[]){
 	sprintf(path, "/home/dan/Desktop/advent-of-code/%s", argv[1]);
 	printf("%s\n", path);
 
-    FILE *f = fopen(path, "r");
+	FILE *f = fopen(path, "r");
 	
 	if (f == NULL)
 	{
