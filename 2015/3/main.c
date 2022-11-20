@@ -35,7 +35,7 @@ void problem_1(FILE *f){
 	char c;
 	int x = 0, y = 0;
 
-	Hashmap_t *hm = hashmap__create(2371);
+	Hashmap_t *hm = hashmap__create();
 
 	while((c = fgetc(f)) != EOF){
 		increment_coordinates(&x, &y, c);
@@ -51,7 +51,7 @@ void problem_2(FILE *f){
 	int santa_x = 0, santa_y = 0;
 	int robot_x = 0, robot_y = 0;
 	int turn = 0;
-	Hashmap_t *hm = hashmap__create(2371);
+	Hashmap_t *hm = hashmap__create();
 
 	while((c = fgetc(f)) != EOF){
 		if (turn % 2 == 0){

@@ -5,10 +5,10 @@
 
 typedef struct {
 	Node_t **nodes;
-	int mod;
 	int unique_elements;
 } Hashmap_t;
 
-Hashmap_t *hashmap__create(int mod);
-void hashmap__add(Hashmap_t *hm, int x, int y);
-void hashmap__free(Hashmap_t *hm);
+Hashmap_t *hashmap__create();
+void hashmap__add(Hashmap_t *, int, int);
+void hashmap__free(Hashmap_t *);
+void hashmap__print_distribution(Hashmap_t*);

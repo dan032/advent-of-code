@@ -5,6 +5,7 @@ Node_t *node__create(int x, int y){
 	node->x = x;
 	node->y = y;
 	node->next = NULL;
+	node->length = 0;
 
 	return node;
 }
@@ -13,6 +14,7 @@ void node__prepend(Node_t **head, int x, int y){
 	Node_t *node = node__create(x, y);
 	node->next = *head;
 	*head = node;
+	(*head)->length = (*head)->next->length + 1;
 }
 
 int node__location_exists(Node_t *head, int x, int y){

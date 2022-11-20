@@ -7,6 +7,7 @@ typedef struct Node {
 	struct Node *next;
 	int x;
 	int y;
+	long length;
 } Node_t;
 
 Node_t *node__create(int, int);

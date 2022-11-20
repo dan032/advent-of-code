@@ -1,8 +1,8 @@
 #include "hashmap.h"
+#include <stdio.h>
 
-Hashmap_t *hashmap__create(int mod){
+Hashmap_t *hashmap__create(){
 	Hashmap_t *hm = (Hashmap_t*) malloc(sizeof(Hashmap_t));
-	hm->mod = mod;
 	hm->nodes = (Node_t**) malloc(CAPACITY * sizeof(Node_t*));
 	hm->unique_elements = 1;
 
@@ -13,7 +13,7 @@ Hashmap_t *hashmap__create(int mod){
 }
 
 int hashmap__get_index(Hashmap_t *hm, int x, int y){
-	return abs((x + y) % hm->mod);
+	return abs((x * y) % CAPACITY);
 }
 
 Node_t **hashmap__get_node(Hashmap_t *hm, int x, int y){
@@ -37,4 +37,11 @@ void hashmap__free(Hashmap_t *hm){
 		node__free(hm->nodes[i]);
 	}
 	free(hm);
+}
+
+void hashmap__print_distribution(Hashmap_t *hm){
+	for(int i = 0; i < CAPACITY; i++){
+		long amount = hm->nodes[i]->length;
+		if (amount) printf("List %d: %ld\n", i + 1, amount);
+	}
 }
