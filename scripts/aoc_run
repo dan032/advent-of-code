@@ -1,0 +1,7 @@
+input="$PWD/input.txt"
+if test -f $input 
+then
+    ./a.out "$input"
+    exit 0
+fi
+./a.out

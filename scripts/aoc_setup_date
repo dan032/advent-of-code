@@ -34,5 +34,5 @@ fi
 echo "$response" >> $INPUT_FILE
 echo "File saved"
 
-cp ./main.c $DAY_DIR
+cp /home/dan/Desktop/advent-of-code/scripts/main.c $DAY_DIR
 echo "Created skeleton .c file"
