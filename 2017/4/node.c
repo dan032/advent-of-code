@@ -9,13 +9,16 @@ Node_t *node__create(char* word){
     strcpy(word_mem, word);
     node->next = NULL;
     node->word = word_mem;
+    node->length = 0;
+
     return node;
 }
 
 int node__pushback(Node_t* head, char* word){
     Node_t *node = node__create(word);
     Node_t *prev = NULL;
-
+    head->length++;
+    
     while(head){
         if (strcmp(head->word, word) == 0) return FALSE;
         prev = head;

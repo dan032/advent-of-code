@@ -16,5 +16,5 @@ typedef struct {
 Set_t *set__create();
 int set__insert(Set_t*, char*);
 void set__free(Set_t*);
-
+void set__print_distribution(Set_t *st);
 #endif

@@ -8,6 +8,7 @@
 typedef struct Node {
     struct Node *next;
     char *word;
+    int length;
 } Node_t;
 
 Node_t *node__create(char*);
