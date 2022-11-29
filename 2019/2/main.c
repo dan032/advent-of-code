@@ -27,6 +27,7 @@ int main(int argc, char *argv[]){
 				icm__perform(icm);
 				if (icm->opcodes[0] == 19690720){
 					icm__free(icm);
+					printf("%d\n", 100 * i + j);
 					fclose(f);
 					return 0;
 				}
