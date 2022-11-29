@@ -69,20 +69,28 @@ void icm_set_current_opcode(IntCodeMachine_t *icm){
     extracted_opcode += last_digit;
 
     icm->current_instruction = extracted_opcode;
-    // printf("CI Set: %d\n", extracted_opcode);
 }
 
 void icm__increment_ip(IntCodeMachine_t *icm){
-    if (icm->current_instruction == ADD_OP) icm->instruction_pointer += 4;
-    else if (icm->current_instruction == MULT_OP) icm->instruction_pointer += 4;
-    else if (icm->current_instruction == INPUT_OP) icm->instruction_pointer += 2;
-    else if (icm->current_instruction == OUTPUT_OP) icm->instruction_pointer += 2;
-    else if (icm->current_instruction == JIT_OP && !icm->ip_modified) icm->instruction_pointer += 3;
-    else if (icm->current_instruction == JIF_OP && !icm->ip_modified) icm->instruction_pointer += 3;
-    else if (icm->current_instruction == LT_OP) icm->instruction_pointer += 4;
-    else if (icm->current_instruction == EQ_OP) icm->instruction_pointer += 4;
+    switch(icm->current_instruction){
+        case ADD_OP:
+        case MULT_OP:
+        case LT_OP:
+        case EQ_OP:
+            icm->instruction_pointer += 4;
+            break;
+        case INPUT_OP:
+        case OUTPUT_OP:
+            icm->instruction_pointer += 2;
+            break;
+        case JIT_OP:
+        case JIF_OP:
+            if (!icm->ip_modified) icm->instruction_pointer += 3;
+            break;
+        default:
+            printf("Unknown opcode - increment\n");
+    }
     icm->ip_modified = FALSE;
-    // printf("IP: %d\n", icm->instruction_pointer);
 }
 
 void icm__set_parameter_modes(IntCodeMachine_t *icm){
@@ -97,7 +105,6 @@ void icm__set_parameter_modes(IntCodeMachine_t *icm){
     icm->parameter_modes[1] = instruction & 1;
     instruction /= 10;
     icm->parameter_modes[2] = instruction & 1;
-    // printf("PM Set: %d %d %d\n", icm->parameter_modes[0], icm->parameter_modes[1], icm->parameter_modes[2]);
 }
 
 long get_operand(IntCodeMachine_t *icm, int pm_idx, int offset){
@@ -113,87 +120,75 @@ long get_operand(IntCodeMachine_t *icm, int pm_idx, int offset){
 
 void icm__perform_operation(IntCodeMachine_t *icm){
     long operand1 = 0, operand2 = 0, location = 0;
+    switch(icm->current_instruction){
+        case ADD_OP:
+            operand1 = get_operand(icm, 0, 1);
+            operand2 = get_operand(icm, 1, 2);
+            location = icm->opcodes[icm->instruction_pointer + 3];
+            icm->opcodes[location] = operand1 + operand2;
+            break;
 
-    if (icm->current_instruction == ADD_OP){
-        operand1 = get_operand(icm, 0, 1);
-        operand2 = get_operand(icm, 1, 2);
-        location = icm->opcodes[icm->instruction_pointer + 3];
-        
-        icm->opcodes[location] = operand1 + operand2;
-    }
-    else if (icm->current_instruction == MULT_OP){
-        operand1 = get_operand(icm, 0, 1);
-        operand2 = get_operand(icm, 1, 2);
-        location = icm->opcodes[icm->instruction_pointer + 3];
+        case MULT_OP:
+            operand1 = get_operand(icm, 0, 1);
+            operand2 = get_operand(icm, 1, 2);
+            location = icm->opcodes[icm->instruction_pointer + 3];
+            icm->opcodes[location] = operand1 * operand2;
+            break;
 
-        icm->opcodes[location] = operand1 * operand2;
-    }
-    else if (icm->current_instruction == INPUT_OP){
-        operand1 = 5;
-        location = icm->opcodes[icm->instruction_pointer + 1];
+        case INPUT_OP:
+            operand1 = 5;
+            location = icm->opcodes[icm->instruction_pointer + 1];
+            icm->opcodes[location] = operand1;
+            break;
 
-        icm->opcodes[location] = operand1;
-    }
-    else if (icm->current_instruction == OUTPUT_OP){
-        operand1 = get_operand(icm, 0, 1);
-        printf("Output: %ld\n", operand1);
-    }
-    else if (icm->current_instruction == JIT_OP){
-        operand1 = get_operand(icm, 0, 1);
-        operand2 = get_operand(icm, 1, 2);
-        
-        if (operand1){
+        case OUTPUT_OP:
+            operand1 = get_operand(icm, 0, 1);
+            printf("Output: %ld\n", operand1);
+            break;
+
+        case JIT_OP:
+            operand1 = get_operand(icm, 0, 1);
+            operand2 = get_operand(icm, 1, 2);
+            
+            if (operand1 == FALSE) break;
+            icm->instruction_pointer = operand2;
+            icm->ip_modified = TRUE;    
+            break;
+
+        case JIF_OP:
+            operand1 = get_operand(icm, 0, 1);
+            operand2 = get_operand(icm, 1, 2);
+            
+            if (operand1 != FALSE) break;
             icm->instruction_pointer = operand2;
             icm->ip_modified = TRUE;
-        }
-    }
-    else if (icm->current_instruction == JIF_OP){
-        operand1 = get_operand(icm, 0, 1);
-        operand2 = get_operand(icm, 1, 2);
+            break;
+
+        case LT_OP:
+            operand1 = get_operand(icm, 0, 1);
+            operand2 = get_operand(icm, 1, 2); 
+            location = icm->opcodes[icm->instruction_pointer + 3];
+            icm->opcodes[location] = operand1 < operand2 ? 1 : 0;
+            break;
         
-        if (operand1 == 0){
-            icm->instruction_pointer = operand2;
-            icm->ip_modified = TRUE;
-        }
-    }
-    else if (icm->current_instruction == LT_OP){
-        operand1 = get_operand(icm, 0, 1);
-        operand2 = get_operand(icm, 1, 2); 
-        location = icm->opcodes[icm->instruction_pointer + 3];
+        case EQ_OP:
+            operand1 = get_operand(icm, 0, 1);
+            operand2 = get_operand(icm, 1, 2); 
+            location = icm->opcodes[icm->instruction_pointer + 3];
+            icm->opcodes[location] = operand1 == operand2 ? 1 : 0;
+            break;
 
-        if (operand1 < operand2){
-            icm->opcodes[location] = 1;
-        }
-        else{
-            icm->opcodes[location] = 0;
-        }
-    }
-    else if (icm->current_instruction == EQ_OP){
-        operand1 = get_operand(icm, 0, 1);
-        operand2 = get_operand(icm, 1, 2); 
-        location = icm->opcodes[icm->instruction_pointer + 3];
-
-        if (operand1 == operand2){
-            icm->opcodes[location] = 1;
-        }
-        else{
-            icm->opcodes[location] = 0;
-        }
-    }
-    else{
-        printf("Invalid Opcode\n");
+        default:
+            printf("Invalid Opcode\n");
     }
 }
 
 void icm__perform(IntCodeMachine_t *icm){
     while (icm->opcodes[icm->instruction_pointer] != HALT_OP){
-        // printf("RI: %ld\n", icm->opcodes[icm->instruction_pointer]);
         icm_set_current_opcode(icm);
         icm__set_parameter_modes(icm);
         icm__perform_operation(icm);
         icm__increment_ip(icm);
-        // printf("--------------\n");
-
     }
 }
 

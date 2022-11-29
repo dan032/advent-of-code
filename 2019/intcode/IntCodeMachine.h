@@ -7,10 +7,13 @@
 #include <string.h>
 
 typedef struct {
-    int *opcodes;
-    int *loaded_memory;
+    long *opcodes;
+    long *loaded_memory;
     size_t opcodes_len;
     int instruction_pointer;
+    int ip_modified;
+    long current_instruction;
+    int *parameter_modes;
 } IntCodeMachine_t;
 
 IntCodeMachine_t *icm__load(FILE *);
