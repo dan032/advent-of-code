@@ -19,7 +19,7 @@ echo "Downloading input for ${url}"
 
 response=$(curl -A "github.com/dan032/advent-of-code by danbutts031@gmail.com" -sB --cookie "session=${token}" $url -H "Connection: close")
 
-if [ "$response" == "$(cat ./unavailable_date.txt)" ]
+if [ "$response" == "$(cat /home/dan/Desktop/advent-of-code/scripts/unavailable_date.txt)" ]
 then
     echo "No Puzzle Available"
     exit 1
