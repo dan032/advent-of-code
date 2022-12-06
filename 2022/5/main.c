@@ -5,7 +5,7 @@
 #include <limits.h>
 #include <ctype.h>
 
-#include "dequeue.h"
+#include "deque.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -40,9 +40,9 @@ void problem1(FILE *f){
 	size_t len;
 	char *line = NULL;
 
-	Dequeue_t **stacks = (Dequeue_t**) calloc(NUM_STACKS, sizeof(Dequeue_t*));
+	Deque_t **stacks = (Deque_t**) calloc(NUM_STACKS, sizeof(Deque_t*));
 	for(int i = 0; i < NUM_STACKS; i++){
-		stacks[i] = dequeue_new();
+		stacks[i] = deque_new();
 	}
 
 	int count = 0;
@@ -55,7 +55,7 @@ void problem1(FILE *f){
 			for(int i = 0; i < strlen(line); i++){
 				if (line[i] != ' ' && idx % 2 == 1){
 					if (isalpha(line[i])){
-						dequeue_pushback(stacks[idx/4], line[i]);
+						deque_pushback(stacks[idx/4], line[i]);
 					}
 				}
 				idx += 1;
@@ -71,14 +71,14 @@ void problem1(FILE *f){
 			int dest = atoi(strtok(NULL, " "));
 
 			for(int i = 0; i < amount; i++){
-				char el = dequeue_popfront(stacks[src - 1]);
-				dequeue_pushfront(stacks[dest-1], el);	
+				char el = deque_popfront(stacks[src - 1]);
+				deque_pushfront(stacks[dest-1], el);	
 			}
 		}
 	}
 	for(int i = 0; i < NUM_STACKS; i++){
-		dequeue_print(stacks[i]);
-		dequeue_free(stacks[i]);
+		deque_print(stacks[i]);
+		deque_free(stacks[i]);
 		printf("\n");
 	}
 	free(stacks);
@@ -90,9 +90,9 @@ void problem2(FILE *f){
 	size_t len;
 	char *line = NULL;
 
-	Dequeue_t **stacks = (Dequeue_t**) calloc(NUM_STACKS, sizeof(Dequeue_t*));
+	Deque_t **stacks = (Deque_t**) calloc(NUM_STACKS, sizeof(Deque_t*));
 	for(int i = 0; i < NUM_STACKS; i++){
-		stacks[i] = dequeue_new();
+		stacks[i] = deque_new();
 	}
 
 	int count = 0;
@@ -105,7 +105,7 @@ void problem2(FILE *f){
 			for(int i = 0; i < strlen(line); i++){
 				if (line[i] != ' ' && idx % 2 == 1){
 					if (isalpha(line[i])){
-						dequeue_pushback(stacks[idx/4], line[i]);
+						deque_pushback(stacks[idx/4], line[i]);
 					}
 				}
 				idx += 1;
@@ -119,23 +119,23 @@ void problem2(FILE *f){
 			int src = atoi(strtok(NULL, " "));
 			strtok(NULL, " ");
 			int dest = atoi(strtok(NULL, " "));
-			Dequeue_t *tmp = (Dequeue_t*) dequeue_new();
+			Deque_t *tmp = (Deque_t*) deque_new();
 
 			for(int i = 0; i < amount; i++){
-				char el = dequeue_popfront(stacks[src - 1]);
-				dequeue_pushfront(tmp, el);	
+				char el = deque_popfront(stacks[src - 1]);
+				deque_pushfront(tmp, el);	
 			}
 
 			for(int i = 0; i < amount; i++){
-				char el = dequeue_popfront(tmp);
-				dequeue_pushfront(stacks[dest - 1], el);	
+				char el = deque_popfront(tmp);
+				deque_pushfront(stacks[dest - 1], el);	
 			}
-			dequeue_free(tmp);
+			deque_free(tmp);
 		}
 	}
 	for(int i = 0; i < NUM_STACKS; i++){
-		dequeue_print(stacks[i]);
-		dequeue_free(stacks[i]);
+		deque_print(stacks[i]);
+		deque_free(stacks[i]);
 		printf("\n");
 	}
 	free(stacks);

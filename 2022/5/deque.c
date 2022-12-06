@@ -1,7 +1,7 @@
-#include "dequeue.h"
+#include "deque.h"
 
-Dequeue_t *dequeue_new(){
-    Dequeue_t *dq = (Dequeue_t*) calloc(1, sizeof(Dequeue_t));
+Deque_t *deque_new(){
+    Deque_t *dq = (Deque_t*) calloc(1, sizeof(Deque_t));
     dq->front = node_new('\0');
     dq->back = node_new('\0');
 
@@ -10,7 +10,7 @@ Dequeue_t *dequeue_new(){
     return dq;
 }
 
-void dequeue_pushback(Dequeue_t *dq, char c){
+void deque_pushback(Deque_t *dq, char c){
     if (dq->size == 0){
         dq->size++;
         Node_t *node = node_new(c);
@@ -27,7 +27,7 @@ void dequeue_pushback(Dequeue_t *dq, char c){
     dq->size++;
 }
 
-void dequeue_pushfront(Dequeue_t *dq, char c){
+void deque_pushfront(Deque_t *dq, char c){
     if (dq->size == 0){
         dq->size++;
         Node_t *node = node_new(c);
@@ -43,7 +43,7 @@ void dequeue_pushfront(Dequeue_t *dq, char c){
     dq->front->next = node;
     dq->size++;
 }
-char dequeue_popfront(Dequeue_t *dq){
+char deque_popfront(Deque_t *dq){
     dq->size--;
     Node_t *temp = dq->front->next;
     char c = temp->value;
@@ -54,11 +54,11 @@ char dequeue_popfront(Dequeue_t *dq){
 }
 
 
-void dequeue_free(Dequeue_t *dq){
+void deque_free(Deque_t *dq){
     node_free(dq->front);
     free(dq);
 }
 
-void dequeue_print(Dequeue_t *dq){
+void deque_print(Deque_t *dq){
     node_print(dq->front->next);
 }
