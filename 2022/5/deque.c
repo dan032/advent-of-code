@@ -56,6 +56,7 @@ char deque_popfront(Deque_t *dq){
 
 void deque_free(Deque_t *dq){
     node_free(dq->front);
+    node_free(dq->back);
     free(dq);
 }
 

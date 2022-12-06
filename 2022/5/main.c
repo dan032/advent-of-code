@@ -31,7 +31,7 @@ int main(int argc, char *argv[]){
 	problem2(f);	
 	fclose(f);
 	
-
+	free(path);
 	return 0;
 }
 
@@ -76,6 +76,7 @@ void problem1(FILE *f){
 			}
 		}
 	}
+	free(line);
 	for(int i = 0; i < NUM_STACKS; i++){
 		deque_print(stacks[i]);
 		deque_free(stacks[i]);
@@ -133,6 +134,7 @@ void problem2(FILE *f){
 			deque_free(tmp);
 		}
 	}
+	free(line);
 	for(int i = 0; i < NUM_STACKS; i++){
 		deque_print(stacks[i]);
 		deque_free(stacks[i]);
