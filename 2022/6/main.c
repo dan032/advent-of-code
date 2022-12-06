@@ -7,7 +7,8 @@
 #define TRUE 1
 #define FALSE 0
 
-void solve(FILE *, int);
+void put(char*, int, int*, int);
+void solve(FILE*, int);
 
 int main(int argc, char *argv[]){
 	char *path = (char*) malloc(100 * sizeof(char));
@@ -23,21 +24,14 @@ int main(int argc, char *argv[]){
 
 	solve(f, 4);
 	rewind(f);
-	solve(f, 14);	
+	solve(f, 14);
+
 	fclose(f);
 	free(path);
 	return 0;
 }
 
-void arr_shift(char *chars, int sz){
-	for(int i = 0; i < sz - 1; i++){
-		chars[i] = chars[i + 1];
-	}
-	chars[sz - 1] = '\0';
-}
-
 int unique_vals(char *chars, int sz){
-
 	for(int i = 0; i < sz; i++){
 		for(int j = i; j < sz; j++){
 			if (i == j) continue;
@@ -47,12 +41,17 @@ int unique_vals(char *chars, int sz){
 	return TRUE;
 }
 
+void put(char *arr, int item, int *end, int len){
+	arr[(*end)++] = item;
+	(*end) %= len;
+}
+
 void solve(FILE *f, int sz){
 	ssize_t read;
 	size_t len;
 	char *line = NULL;
 	char chars[sz];
-	int idx = 0;
+	int idx = 0, end = 0;
 
 	while((read = getline(&line, &len, f)) != EOF){
 		line[strcspn(line, "\n")] = 0;
@@ -62,9 +61,8 @@ void solve(FILE *f, int sz){
 				chars[idx++] = line[i];
 				continue;
 			}
-
-			arr_shift(chars, sz);
-			chars[sz - 1] = line[i];
+			
+			put(chars, line[i], &end, sz);
 			if(unique_vals(chars, sz)){
 				printf("%d\n", i + 1);
 				return;
