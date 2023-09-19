@@ -1,100 +1,97 @@
 #include "computer.h"
 
-computer_t computer_create(int a_val, int b_val, int idx_val){
-    computer_t computer = {.register_a = a_val, .register_b = b_val, .idx = idx_val};
+computer_t computer_create(unsigned int *r_vals, size_t r_size, int idx_val){
+    computer_t computer = {
+        .registers = (unsigned int*) calloc(r_size, sizeof(unsigned int)),
+        .n_registers = r_size,
+        .idx = idx_val
+    };
+
+    for(int i = 0; i < r_size; i++) computer.registers[i] = r_vals[i];
+
     return computer;
 }
 
 void computer_load_data(computer_t *computer, FILE *f){
-    int idx = 0;
     ssize_t read;
     size_t len;
-    char *line = NULL, *token = NULL;
-    char reg = '\0';
+    char *line = NULL, *instruction_code = NULL;
+
     while((read = getline(&line, &len, f)) != EOF){
         instruction_t instruction;
         line[strcspn(line, "\n")] = '\0';
-        token = strtok(line, " ");
+        instruction_code = strtok(line, " ");
 
-        if(strcmp(token, "hlf") == 0){
-            instruction_set(&instruction, HLF, strtok(NULL, "")[0], 0);
+        if(strcmp(instruction_code, "hlf") == 0){
+            instruction_init(&instruction, HLF, strtok(NULL, ""), 0);
         }
-        else if(strcmp(token, "tpl") == 0){
-            instruction_set(&instruction, TPL, strtok(NULL, "")[0], 0);
+        else if(strcmp(instruction_code, "tpl") == 0){
+            instruction_init(&instruction, TPL, strtok(NULL, ""), 0);
         }
-        else if(strcmp(token, "inc") == 0){
-            instruction_set(&instruction, INC, strtok(NULL, "")[0], 0);
+        else if(strcmp(instruction_code, "inc") == 0){
+            instruction_init(&instruction, INC, strtok(NULL, ""), 0);
         }
-        else if (strcmp(token, "jmp") == 0){
-            instruction_set(&instruction, JMP, '\0', atoi(strtok(NULL, "")));
+        else if (strcmp(instruction_code, "jmp") == 0){
+            instruction_init(&instruction, JMP, "\0", atoi(strtok(NULL, "")));
         }
-        else if(strcmp(token, "jie") == 0){
-            token = strtok(NULL, ", ");
-            reg = token[0];
-            token = strtok(NULL, "");
-            instruction_set(&instruction, JIE, reg, atoi(token));
+        else if(strcmp(instruction_code, "jie") == 0){
+            instruction_init(&instruction, JIE, strtok(NULL, ", "), atoi(strtok(NULL, "")));
         }
-        else if(strcmp(token, "jio") == 0){
-            token = strtok(NULL, ", ");
-            reg = token[0];
-            token = strtok(NULL, "");
-            instruction_set(&instruction, JIO, reg, atoi(token));
+        else if(strcmp(instruction_code, "jio") == 0){
+            instruction_init(&instruction, JIO, strtok(NULL, ", "), atoi(strtok(NULL, "")));
+        }
+        else{
+            printf("UNSUPPORTED INSTRUCTION CODE IN INPUT: %s\n", instruction_code);
         }
 
-        computer->instructions[idx++] = instruction;
+        computer->instructions[computer->idx++] = instruction;
     }
+    computer->idx = 0;
 }
 
 void computer_perform(computer_t *computer){
     while(computer->idx < LINE_COUNT){
+        int increment_idx = TRUE;
         instruction_t ins = computer->instructions[computer->idx];
         switch(ins.code){
-            case HLF: {
-                if(ins.reg == 'a') computer->register_a *= 0.5;
-                else computer->register_b *= 0.5;
+            case HLF:
+                computer->registers[ins.reg] *= 0.5;
                 break;
-            }
-            case TPL: {
-                if(ins.reg == 'a') computer->register_a *= 3;
-                else computer->register_b *= 3;
+            case TPL:
+                computer->registers[ins.reg] *= 3;
                 break;
-            }
-            case INC: {
-                if(ins.reg == 'a') computer->register_a += 1;
-                else computer->register_b += 1;
+            case INC:
+                computer->registers[ins.reg] += 1;
                 break;
-            }
-            case JMP: {
+            case JMP:
                 computer->idx += ins.offset;
-                continue;
-            }
-            case JIE: {
-                if(ins.reg == 'a' && computer->register_a % 2 == 0){
+                increment_idx = FALSE;
+                break;
+            case JIE:
+                if(computer->registers[ins.reg] % 2 == 0){
                     computer->idx += ins.offset;
-                    continue;
-                }
-                else if(ins.reg == 'b' && computer->register_b % 2 == 0){
-                    computer->idx += ins.offset;
-                    continue;
+                    increment_idx = FALSE;
                 }
                 break;
-            }
-            case JIO: {
-                if(ins.reg == 'a' && computer->register_a == 1){
+            case JIO:
+                if(computer->registers[ins.reg] == 1){
                     computer->idx += ins.offset;
-                    continue;
-                }
-                else if(ins.reg == 'b' && computer->register_b == 1){
-                    computer->idx += ins.offset;
-                    continue;
+                    increment_idx = FALSE;
                 }
                 break;
-            }
-            default: {
+            default:
                 printf("UNSUPPORTED CODE: %d\n", ins.code);
-            }
         }
 
-        computer->idx++;
+        if (increment_idx) computer->idx++;
     }
+}
+
+void computer_print_registers(computer_t computer){
+    for(int i = 0; i < computer.n_registers; i++)
+        printf("Register '%c' has a value of %d\n", (i + 'a'), computer.registers[i]);
+}
+
+void computer_free(computer_t computer){
+    free(computer.registers);
 }

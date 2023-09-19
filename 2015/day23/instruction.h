@@ -7,10 +7,10 @@ typedef enum {
 
 typedef struct {
     opcode code;
-    char reg;
+    int reg;
     int offset;
 } instruction_t;
 
-void instruction_set(instruction_t *, opcode, char, int);
+void instruction_init(instruction_t *, opcode, char*, int);
 
 #endif
