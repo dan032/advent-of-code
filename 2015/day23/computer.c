@@ -1,7 +1,7 @@
 #include "computer.h"
 
 computer_t computer_create(int a_val, int b_val, int idx_val){
-    computer_t computer = {.register_a = 0, .register_b = 0, .idx = 0};
+    computer_t computer = {.register_a = a_val, .register_b = b_val, .idx = idx_val};
     return computer;
 }
 

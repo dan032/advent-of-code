@@ -2,7 +2,6 @@
 #include "computer.h"
 #include "instruction.h"
 
-
 int main(int argc, char *argv[]){
     char *path = "/Users/dan2/advent-of-code/2015/day23/input.txt";
 	FILE *f = fopen(path, "r");
