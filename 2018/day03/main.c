@@ -24,6 +24,7 @@ int main(){
     int id = 0, offset_y = 0, offset_x = 0, width = 0, height = 0;
 
     for(int i = 0; i < Y_DIMS; i++) memset(matrix[i], 0, X_DIMS * sizeof(int));
+    memset(size_matrix, -1, (LINE_NUMS + 1) * sizeof(int));
 
     while((read = getline(&line, &len, f)) != EOF){
         line[strcspn(line, "\n")] = '\0';
@@ -48,20 +49,16 @@ int main(){
 
     int result = 0;
     int idx = 0;
-    while(idx < LINE_NUMS){
-        int count = 0;
-        for(int i = 0; i < Y_DIMS; i++){
-            for(int j = 0; j < X_DIMS; j++){
-                if (matrix[i][j] == idx){
-                    count++;
-                }
-            }
+    for(int i = 0; i < Y_DIMS; i++){
+        for(int j = 0; j < X_DIMS; j++){
+            if(matrix[i][j] != -1) size_matrix[matrix[i][j]]--;
         }
-        if (count == size_matrix[idx]){
-            printf("%d\n", idx);
-            return 0;
-        }
-        idx++;
     }
 
+    for(int i = 0; i < LINE_NUMS; i++){
+        if (size_matrix[i] == 0){
+            printf("%d\n", i);
+            return 0;
+        }
+    }
 }
