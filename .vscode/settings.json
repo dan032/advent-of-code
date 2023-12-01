@@ -1,3 +1,37 @@
 {
-    "git.openDiffOnClick": false
+    "git.openDiffOnClick": false,
+    "files.associations": {
+        "d_string.h": "c",
+        "algorithm": "c",
+        "random": "c",
+        "string.h": "c",
+        "__bit_reference": "c",
+        "__functional_base": "c",
+        "__node_handle": "c",
+        "bitset": "c",
+        "chrono": "c",
+        "deque": "c",
+        "__memory": "c",
+        "functional": "c",
+        "iterator": "c",
+        "limits": "c",
+        "memory": "c",
+        "optional": "c",
+        "ratio": "c",
+        "system_error": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "vector": "c",
+        "charconv": "c",
+        "format": "c",
+        "array": "c",
+        "utility": "c",
+        "stdio.h": "c",
+        "computer.h": "c",
+        "stdlib.h": "c",
+        "istream": "c",
+        "*.tcc": "c",
+        "queue": "c",
+        "stack": "c"
+    }
 }
