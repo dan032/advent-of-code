@@ -1,59 +1,50 @@
+def game(line)
+  m = line.match(/Game (?<id>\d+): (?<game>.*)/)
+  [ m['id'].to_i, m['game'].split("; ") ]
+end
+
+def dies(round)
+  round.split(", ")
+end
+
+def die_data(die)
+  m = die.match(/(?<die_count>\d+) (?<die_color>.*)/)
+  [ m['die_count'].to_i, m['die_color'] ]
+end
+
 def problem1
   result = 0
-  idx = 0
+  colors = {"red" => 12, "green" => 13, "blue" => 14}
 
   File.readlines("input.txt", chomp: true).each do |line|
     valid = true
-    colors = {"red" => 12, "green" => 13, "blue" => 14}
-    line = line[line.index(":") + 2..]
-    idx += 1
-    sets = line.split("; ")
-    sets.each_with_index do |s, i|
-      vals = s.split(", ")
+    id, rounds = game(line)
 
-      vals.each do |e|
-        n = e.scan(/\d/).join('')
-        col = e.scan(/(green|red|blue)/).join('')
-
-        next if n.nil? || col.nil?
-
-        valid = false if colors[col] < n.to_i
+    rounds.each do |round|
+      dies(round).each do |die|
+        die_count, die_color = die_data(die)
+        valid = false if colors[die_color] < die_count
       end
-
-      next unless valid
     end
-
-    result += idx if valid
+    result += id if valid
   end
-
   puts result
 end
 
 def problem2
   result = 0
-  idx = 0
-
   File.readlines("input.txt", chomp: true).each do |line|
-    valid = true
-    colors = {"red" => -1, "green" => -1, "blue" => -1}
-    line = line[line.index(":") + 2..]
-    idx += 1
-    sets = line.split("; ")
-    sets.each_with_index do |s, i|
-      vals = s.split(", ")
-      vals.each do |e|
-        n = e.scan(/\d/).join('')
-        col = e.scan(/(green|red|blue)/).join('')
+    colors = {"red" => 1, "green" => 1, "blue" => 1}
 
-        next if n.nil? || col.nil?
-        colors[col] = [colors[col], n.to_i].max
+    game(line)[1].each do |round|
+      dies(round).each do |die|
+        die_count, die_color = die_data(die)
+        colors[die_color] = [colors[die_color], die_count].max
       end
-
     end
 
     result += (colors["red"] * colors["green"] * colors["blue"])
   end
-
   puts result
 end
 
