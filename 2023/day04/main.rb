@@ -2,30 +2,26 @@ class Solution
   attr_reader :data
 
   def initialize
-    @data = []
-
-    File.readlines("input.txt", chomp: true).each do |line|
-      @data << line
-    end
+    @data = File.readlines("input.txt", chomp: true)
   end
 
   def problem1
     p data
-      .map{game(_1)}
-      .map{|game| winning_numbers(game) & player_numbers(game) }
-      .sum{|x| x.size - 1 >= 0 ? 2 ** (x.size - 1) : 0}
+      .map { game(_1) }
+      .map { winning_numbers(_1[1]) & player_numbers(_1[1]) }
+      .sum { |x| x.size - 1 >= 0 ? 2 ** (x.size - 1) : 0 }
   end
 
   def problem2
     cards = Array.new(data.size, 1)
 
     data
-      .map{game(_1)}
-      .each_with_index.map{|game, idx|[winning_numbers(game) & player_numbers(game), idx]}
-      .filter{!_1[0].empty?}
-      .each {|matching| matching[0].size.times {|y| cards[matching[1] + y + 1] += cards[matching[1]] }}
+      .map { game(_1) }
+      .map { [ winning_numbers(_1[1]) & player_numbers(_1[1]), _1[0].to_i] }
+      .filter { !_1[0].empty? }
+      .each { |matching| matching[0].size.times {|y| cards[matching[1] + y] += cards[matching[1] - 1] } }
 
-      p cards.sum
+    p cards.sum
   end
 
   private
@@ -39,7 +35,7 @@ class Solution
   end
 
   def game(line)
-    line.match(/Card\s+\d+: (?<game>.*)/)["game"]
+    line.scan(/Card\s+(?<id>\d+): (?<game>.*)/).first
   end
 end
 

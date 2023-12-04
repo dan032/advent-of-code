@@ -2,13 +2,9 @@ class Solution
   attr_reader :data, :row_offsets, :col_offsets
 
   def initialize
-    @data = []
     @row_offsets = [0, 0, 0, -1, -1,-1, 1, 1, 1]
     @col_offsets = [-1, 0, 1, -1, 0, 1, -1, 0, 1]
-
-    File.readlines("input.txt", chomp: true).each do |line|
-      @data << line.split("")
-    end
+    @data = File.readlines("input.txt", chomp: true)
   end
 
   def problem1

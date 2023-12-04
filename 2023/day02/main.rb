@@ -1,52 +1,34 @@
-def game(line)
-  m = line.match(/Game (?<id>\d+): (?<game>.*)/)
-  [ m['id'].to_i, m['game'].split("; ") ]
-end
+class Solution
+  attr_reader :data, :colors
 
-def dies(round)
-  round.split(", ")
-end
-
-def die_data(die)
-  m = die.match(/(?<die_count>\d+) (?<die_color>.*)/)
-  [ m['die_count'].to_i, m['die_color'] ]
-end
-
-def problem1
-  result = 0
-  colors = {"red" => 12, "green" => 13, "blue" => 14}
-
-  File.readlines("input.txt", chomp: true).each do |line|
-    valid = true
-    id, rounds = game(line)
-
-    rounds.each do |round|
-      dies(round).each do |die|
-        die_count, die_color = die_data(die)
-        valid = false if colors[die_color] < die_count
-      end
-    end
-    result += id if valid
+  def initialize
+    @colors = {"red" => 12, "green" => 13, "blue" => 14}
+    @data = File.readlines("input.txt", chomp: true)
   end
-  puts result
-end
 
-def problem2
-  result = 0
-  File.readlines("input.txt", chomp: true).each do |line|
-    colors = {"red" => 1, "green" => 1, "blue" => 1}
-
-    game(line)[1].each do |round|
-      dies(round).each do |die|
-        die_count, die_color = die_data(die)
-        colors[die_color] = [colors[die_color], die_count].max
-      end
-    end
-
-    result += (colors["red"] * colors["green"] * colors["blue"])
+  def problem1
+    p data.map { game(_1) }.filter { valid_game?(_1[1]) }.map { _1[0].to_i }.sum
   end
-  puts result
+
+  def problem2
+    p data.map { game(_1) }.map { get_max_values(_1[1]) }.map { _1.inject(:*) }.sum
+  end
+
+  private
+
+  def game(line)
+    line.scan(/Game (?<id>\d+): (?<game>.*)/).first
+  end
+
+  def get_max_values(game)
+    [ "red", "green", "blue" ].map{ game.scan(/(?<count>\d+) (?<color>(#{_1}))/).map{|r| r[0].to_i}.max }
+  end
+
+  def valid_game?(game)
+    colors.all? { |color, max_val| max_val >= game.scan(/(?<count>\d+) (?<color>(#{color}))/).map{_1[0].to_i}.max }
+  end
 end
 
-problem1
-problem2
+s = Solution.new
+s.problem1
+s.problem2

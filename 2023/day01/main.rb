@@ -1,31 +1,25 @@
-def is_digit?(c)
-  c.match?(/[[:digit:]]/)
-end
-
-def problem(is_problem_2)
-  result = 0
-  digits = { 'one' => 1, 'two' => 2, 'three' => 3, 'four' => 4, 'five' => 5, 'six' => 6, 'seven' => 7, 'eight' => 8, 'nine' => 9 }
-
-  File.readlines("input.txt", chomp: true).each do |line|
-    digit_arr = []
-
-    line.split("").each_with_index do |c,i|
-      if is_digit?(c)
-        digit_arr << c
-      end
-
-      next unless is_problem_2
-      digits.each do |word, val|
-        if line[i..].start_with?(word)
-          digit_arr << val.to_s
-        end
-      end
-    end
-    result += (digit_arr[0] + digit_arr[-1]).to_i
+class Solution
+  attr_reader :data, :digits
+  def initialize
+    @data = File.readlines("input.txt", chomp: true)
+    @digits = { 'one' => 'o1e', 'two' => 't2o', 'three' => 't3e',
+                'four' => 'f4r', 'five' => 'f5e', 'six' => 'x6x',
+                'seven' => 's7n', 'eight' => 'e8t', 'nine' => 'n9e'
+              }
   end
 
-  puts result
+  def problem(is_problem_2)
+    p data
+      .map{ is_problem_2 ? _1.gsub(/#{digits.keys.join('|')}/, digits) : _1 }
+      .map{ is_problem_2 ? _1.gsub(/#{digits.keys.join('|')}/, digits) : _1 }
+      .map{ _1.match?(/[\d+]/) }
+      .map{ _1.filter { |c| is_digit?(c) } }
+      .map{ _1.first + _1.last }
+      .map{ _1.to_i }
+      .sum
+  end
 end
 
-problem(false)
-problem(true)
+s = Solution.new
+s.problem(false)
+s.problem(true)
