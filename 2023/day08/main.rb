@@ -1,89 +1,45 @@
 class Solution
-  attr_reader :data
+  attr_reader :data, :instructions, :entries
 
   def initialize
     @data = File.read("#{Dir.pwd}/2023/day08/input.txt", chomp: true).split("\n")
+    @instructions = data[0].split("").cycle
+    @entries = data[2..].map { _1.scan(/(.+) = \((.+), (.+)\)/).first }.map { [_1[0], [_1[0], _1[1], _1[2]]] }.to_h
   end
 
   def problem1
-    instructions = data[0]
-    entries = data[2..]
-                .map {_1.scan(/([A-Z]+) = \(([A-Z]+), ([A-Z]+)\)/).first}
-                .map {[_1[0], [_1[1], _1[2]]]}.to_h
-
-    ins_idx = 0
-    result = 0
     curr_key = "AAA"
-    until curr_key == "ZZZ"
-      curr_entry = entries[curr_key]
-      curr_key = instructions[ins_idx % instructions.size] == "L" ? curr_entry[0] : curr_entry[1]
-      ins_idx += 1
-      result += 1
-    end
 
-    p result
+    p instructions.reduce(0) { |sum, ins|
+        curr_key = ins == "L" ? entries[curr_key][1] : entries[curr_key][2]
+        sum += 1
+        break sum if curr_key == "ZZZ"
+        sum
+    }
   end
 
   def problem2
-    instructions = data[0]
-    @data = data[2..]
-    entries = {}
-    a_entries = []
-    ins_idx = 0
-    data.each do |e|
-      x = e.scan(/([0-9A-Z]+) = \(([0-9A-Z]+), ([0-9A-Z]+)\)/).first
-      entries[x[0]] = [x[0],x[1], x[2], -1]
-
-      a_entries << entries[x[0]] if x[0][2] == "A"
+    curr_entries = entries.filter { _1[2] == "A"}
+    res = instructions.each_with_index.reduce([]) do |finished, args|
+      break finished if curr_entries.empty?
+      instruction, idx = args
+      curr_entries = curr_entries.map { next_entry(instruction, _1) }
+      found = curr_entries.filter! { |x| x[0][2] != 'Z' }
+      finished << idx + 1 if found
+      finished
     end
 
-    res = 0
-    finished = []
-    until a_entries.empty?
-      res += 1
-      curr_entries = a_entries
-      if instructions[ins_idx % instructions.size] == "L"
-        a_entries = curr_entries.map do |entry|
-          get_entry(entry[1], entries)
-        end
-      else
-        a_entries = curr_entries.map do |entry|
-          get_entry(entry[2], entries)
-        end
-      end
-
-      a_entries = a_entries.filter do |x|
-        if x[0][2] == 'Z'
-          finished << res
-          false
-        else
-          true
-        end
-
-      end
-
-      ins_idx += 1
-    end
-
-    p finished.reduce(1) {|acc, n| acc.lcm(n)}
+    p res.reduce(1) { _1.lcm(_2) }
   end
 
   private
 
-  def get_entries(a_entries, entries)
-    res = []
-    a_entries.each do |x|
-      res << x
-    end
-    res
+  def next_entry(ins, curr_entry)
+    ins == "L" ? entry(curr_entry[1][1]) : entry(curr_entry[1][2])
   end
 
-  def complete?(entries)
-    entries.all? {|x| x[3] != -1}
-  end
-
-  def get_entry(key, entries)
-    entries[key]
+  def entry(id)
+    [id, entries[id]]
   end
 end
 
