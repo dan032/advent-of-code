@@ -21,7 +21,7 @@ class Solution
   end
 
   def get_max_values(game)
-    [ "red", "green", "blue" ].map{ game.scan(/(?<count>\d+) (?<color>(#{_1}))/).map{|r| r[0].to_i}.max }
+    %w[red green blue].map{ game.scan(/(?<count>\d+) (?<color>(#{_1}))/).map{|r| r[0].to_i}.max }
   end
 
   def valid_game?(game)

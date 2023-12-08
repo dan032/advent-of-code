@@ -7,24 +7,24 @@ class Solution
   end
 
   def problem1
-    p perform(&method(:get_score1))
+    perform(&method(:get_score1))
   end
 
   def problem2
     card_strength.insert(0, card_strength.delete('J'))
-    p perform(&method(:get_score2))
+    perform(&method(:get_score2))
   end
 
   private
 
   def perform(&score_func)
-    data
+    p data
       .split("\n")
-      .map {[_1.scan(/([A-Z0-9]+) (\d+)/).first]}
-      .map {[_1[0][0], _1[0][1].to_i]}
-      .sort_by {|x| [score_func.call(x[0]), 5.times.map {|i| card_strength.index(x[0][i])}]}
+      .map { [_1.scan(/([A-Z0-9]+) (\d+)/).first] }
+      .map { [_1[0][0], _1[0][1].to_i] }
+      .sort_by { |x| [score_func.call(x[0]), 5.times.map { |i| card_strength.index(x[0][i]) }] }
       .each_with_index
-      .map {_1[1] * (_2 + 1)}
+      .map { _1[1] * (_2 + 1) }
       .sum
   end
 
@@ -54,8 +54,8 @@ class Solution
     return 6 if count.values.max == 4
     return 5 if (count.values & [2,3]).size == 2
     return 4 if count.values.max == 3
-    return 3 if count.values.filter {_1 == 2 }.size == 2
-    return 2 if count.values.filter{ _1 == 2 }.size == 1
+    return 3 if count.values.filter { _1 == 2 }.size == 2
+    return 2 if count.values.filter { _1 == 2 }.size == 1
     1
   end
 end
