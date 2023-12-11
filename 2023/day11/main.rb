@@ -1,58 +1,52 @@
 class Solution
-  attr_reader :grid, :row_indexes, :col_indexes, :row_offsets, :col_offsets
+  attr_reader :grid, :row_indexes, :col_indexes, :offset
 
   def initialize
     @grid = File.read("#{Dir.pwd}/2023/day11/input.txt", chomp: true).split("\n").map {_1.split("")}
-    @row_offsets = [-1, 1, 0, 0]
-    @col_offsets = [0, 0, -1, 1]
   end
 
   def problem(offset)
     @row_indexes = grid.each_with_index.map {[_1, _2]}.filter{!_1[0].include?("#")}.map{_2}
     @col_indexes = grid.transpose.each_with_index.map {[_1, _2]}.filter{!_1[0].include?("#")}.map{_2}
+    @offset = offset
 
-    count = 1
-    galaxies = []
-    grid.each_with_index do |line, i|
-      line.each_with_index do |c, j|
-        if c == '#'
-          galaxies << [count, i, j, 0, 0]
-          count += 1
-        end
-      end
-    end
-
-    p galaxies.reduce(0) { |res, g|  res += bfs(g, grid, galaxies, offset).sum{|_, v| v} / 2 }
+    galaxies = extract_galaxies
+    p galaxies.reduce(0) { |res, g|  res += calculate(g, galaxies).sum{|_, v| v}} / 2
   end
 
   private
 
-  def bfs(source, grid, galaxies, offset)
-    queue = [ source ]
-    grid_cpy = grid.map { _1.dup }
-    distances = { source[0] => 0 }
-
-    until queue.empty?
-      galaxy_id, i, j, dist_x, dist_y = queue.shift
-
-      (0..3).each do |x|
-        new_i, new_j = col_offsets[x] + i, row_offsets[x] + j
-        next if new_i < 0 || new_i >= grid_cpy.size || new_j < 0 || new_j >= grid_cpy[0].size || grid_cpy[new_i][new_j] == 'x'
-
-        new_dist_x,new_dist_y = dist_x + col_offsets[x].abs, dist_y + row_offsets[x].abs
-        new_dist_y += offset if (row_indexes.include?(new_i))
-        new_dist_x += offset if (col_indexes.include?(new_j))
-        if grid_cpy[new_i][new_j] == '#'
-          g_id2 = galaxies.select {|g2| g2[1] == new_i && g2[2] == new_j}.first[0]
-          distances[g_id2] = (new_dist_x + new_dist_y) unless  distances.key?(g_id2)
+  def extract_galaxies
+    count = 0
+    grid.each_with_index.map { [_1, _2] }.map do|line_with_idx|
+      line_with_idx[0].each_with_index.map do |c, j|
+        if c == "#"
+          count += 1
+          [count, line_with_idx[1], j]
         end
+      end.filter { _1 }
+    end.filter { !_1.empty? }.flatten(1)
+  end
 
-        queue << [galaxy_id, new_i, new_j, new_dist_x, new_dist_y]
-        grid_cpy[new_i][new_j] = "x"
+  def calculate(source, galaxies)
+    galaxies.map do |g|
+      x, y = [g[1] - source[1], g[2] - source[2]].map {_1.abs}
+      x_offset = calculate_offset(row_indexes, source[1], g[1])
+      y_offset = calculate_offset(col_indexes, source[2], g[2])
+
+      [g[0], (x + y + x_offset + y_offset)]
+    end.to_h
+  end
+
+  def calculate_offset(indexes, g1, g2)
+    start_point, end_point = [g1, g2].min, [g1, g2].max
+
+    indexes.reduce(0) do |curr_offset, idx|
+      if (start_point..end_point).include?(idx)
+        curr_offset += offset
       end
+      curr_offset
     end
-
-    distances
   end
 end
 
