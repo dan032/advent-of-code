@@ -18,7 +18,7 @@ def problem2():
     list1, list2 = populateLists()
     count = Counter(list2)
 
-    return sum(y[0] * y[1] for y in list(map(lambda x: [x, count[x]], list1)))
+    return sum(map(lambda x: x * count[x], list1))
 
 print(problem1())
 print(problem2())
