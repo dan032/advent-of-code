@@ -29,28 +29,33 @@ for mi in monkey_inputs:
     monkeys.append([i, items, op, test, true_result, false_result])
     i += 1
 
-
+results = defaultdict(int)
 modulo = prod(map(lambda m: m[3], monkeys))
     
-def problem(problem1):
-    results = defaultdict(int)
-    for _ in range(20 if problem1 else 10000):
-        for monkey in monkeys:
-            count = 0
-            for item in monkey[1]:
-                count += 1
-                right = item if monkey[2][2] == "old" else int(monkey[2][2])
-                current = item + right if monkey[2][1] == "+" else item * right
-                current = current // 3 if problem1 else current % modulo
-                
-                if current % monkey[3] == 0:
-                    monkeys[monkey[4]][1].append(current)
-                else:
-                    monkeys[monkey[5]][1].append(current)
-            monkey[1] = []
-            results[monkey[0]] += count
+for _ in range(10000):
+    for monkey in monkeys:
+        count = 0
+        for item in monkey[1]:
+            count += 1
+            op = monkey[2][1]
+            rightOp = monkey[2][2]
+            right = item
+            left = item
+            if rightOp != "old":
+                right = int(rightOp)
+            res = 0
 
-    return prod(sorted(results.values(), reverse=True)[:2])
+            if op == "+":
+                res = left + right
+            else:
+                res = left * right
+            res %= modulo
 
-print(problem(True))
-print(problem(False))
+            if res % monkey[3] == 0:
+                monkeys[monkey[4]][1].append(res)
+            else:
+                monkeys[monkey[5]][1].append(res)
+        monkey[1] = []
+        results[monkey[0]] += count
+
+print(prod(sorted(results.values(), reverse=True)[:2]))
