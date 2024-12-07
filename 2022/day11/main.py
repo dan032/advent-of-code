@@ -3,24 +3,17 @@ from collections import defaultdict
 from math import prod
 
 
-inputs = [line.strip() for line in open("input.txt", "r")]
-monkey_inputs = []
-
 def element_in_list(inputs, el):
     try:
         return inputs.index(el)
     except:
         return -1
 
-while element_in_list(inputs, "") != -1:
-    idx = inputs.index("")
-    monkey_inputs.append(inputs[:idx])
-    del inputs[:idx+1]
-
+def parse_num(x):
+    return int(re.findall(r"\d+", x)[0])
 
 def generate_monkeys():
-    return list(map(lambda x: [x[0], list(map(int, re.findall(r"\d+", x[1][1]))), x[1][2][17:].split(" "), int(re.findall(r"\d+", x[1][3])[0]), int(re.findall(r"\d+", x[1][4])[0]), int(re.findall(r"\d+", x[1][5])[0])], enumerate(monkey_inputs)))
-
+    return list(map(lambda x: [x[0], list(map(int, re.findall(r"\d+", x[1][1]))), x[1][2][17:].split(" "), *list(map(parse_num, x[1][3:]))], enumerate(monkey_inputs)))
 
 def problem(problem1):
     monkeys = generate_monkeys()
@@ -42,6 +35,14 @@ def problem(problem1):
             monkey[1] = []
 
     return prod(sorted(results.values(), reverse=True)[:2])
+
+inputs = [line.strip() for line in open("input.txt", "r")]
+monkey_inputs = []
+
+while element_in_list(inputs, "") != -1:
+    idx = inputs.index("")
+    monkey_inputs.append(inputs[:idx])
+    del inputs[:idx+1]
 
 print(problem(True))
 print(problem(False))
