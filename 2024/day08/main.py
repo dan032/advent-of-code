@@ -1,42 +1,26 @@
 from collections import defaultdict
-from itertools import permutations
+from itertools import permutations, chain
 
+def outOfBounds(i, j):
+    return i < 0 or i >= len(matrix) or j < 0 or j >= len(matrix[0])
 
-def populateAntiNodes1(start, p, antinodes):
-    i = 2 * start[0] - p[0]
-    j = 2 * start[1] - p[1]
-
-    if i < 0 or i >= len(matrix) or j < 0 or j >= len(matrix[0]):
-        return
+def populateAntiNodes1(i, j, *_):
+    return [] if outOfBounds(i, j) else [(i, j)]
     
-    antinodes.add((i, j))
+def populateAntiNodes2(i, j, start, current):
+    return [] if outOfBounds(i, j) else populateAntiNodes2(i + start[0] - current[0], j + start[1] - current[1], start, current) + [(i, j)]
 
-def populateAntiNodes2(start, p, antinodes):
-    i = start[0]
-    j = start[1]
-
-    while i >= 0 and i < len(matrix) and j >= 0 and j < len(matrix[0]):
-        antinodes.add((i, j))
-        i += start[0] - p[0]
-        j += start[1] - p[1]
-
-def problem(populateAntiNodes):
-    antinodes = set()
-    for v in locs.values():
-        for pair in list(permutations(v)):
-            for p in pair[1:]:
-                populateAntiNodes(pair[0], p, antinodes)
-    return len(antinodes)
+def problem(populateAntiNodes, indexMapping):
+    antinodes = (populateAntiNodes(*indexMapping(pair[0], current), pair[0], current) for indexes in antennas.values() for pair in list(permutations(indexes)) for current in pair[1:])
+    return len(set(chain.from_iterable(antinodes)))
 
 matrix = [list(line.strip()) for line in open("input.txt", "r")]
-locs = defaultdict(list)
+antennas = defaultdict(list)
 
 for i in range(len(matrix)):
     for j in range(len(matrix[0])):
-        if matrix[i][j] == ".":
-            continue
+        if matrix[i][j] != ".":
+            antennas[matrix[i][j]].append((i, j))
 
-        locs[matrix[i][j]].append((i, j))
-
-print(problem(populateAntiNodes1))
-print(problem(populateAntiNodes2))
+print(problem(populateAntiNodes1, lambda start, current: (2 * start[0] - current[0], 2 * start[1] - current[1])))
+print(problem(populateAntiNodes2, lambda start, _: (start[0], start[1])))
